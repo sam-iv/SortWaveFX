@@ -1,42 +1,69 @@
 package com.sortwavefx;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * A class that serves as the entry point for SortWaveFX.
+ *
+ * @author Samuel Ivuerah
+ */
 public class SortWaveFXApp extends Application {
 
-  private Stage mainStage;
-  private Scene mainMenuScene;
-  private Scene visualisationScene;
+  /** The primary stage. */
+  private Stage primaryStage;
+
+  /** The presenter for the main-menu. */
+  private MainMenuPresenter mainMenu;
+
+  /** The presenter for the visualisation. */
+  private VisualPresenter visual;
+
+  /** The presenter for the end screen. */
+  private EndPresenter end;
 
   public static void main(String[] args) {
-    launch();
+    launch(args);
   }
 
+  /** A method responsible for initialising the presenters and showing the main-menu. */
   @Override
-  public void start(Stage mainStage) throws Exception {
-    this.mainStage = mainStage;
+  public void start(Stage primaryStage) {
+    this.primaryStage = primaryStage;
 
-    Parent mainMenuRoot = FXMLLoader.load(getClass().getResource("MainMenu.fxml"));
-    Parent visualisationRoot = FXMLLoader.load(getClass().getResource("VisualisationScreen.fxml"));
+    mainMenu = new MainMenuPresenter();
+    visual = new VisualPresenter();
+    end = new EndPresenter();
 
-    mainMenuScene = new Scene(mainMenuRoot);
-    visualisationScene = new Scene(visualisationRoot);
+    mainMenu.setMainApp(this);
+    visual.setMainApp(this);
+    end.setMainApp(this);
 
-    // Set initial scene
-    mainStage.setScene(mainMenuScene);
-    mainStage.setTitle("SortWaveFX");
-    mainStage.show();
+    mainMenu.show();
   }
 
-  public void switchToVisualisation() {
-    mainStage.setScene(visualisationScene);
+  /** A method to change the scenes on the stage. */
+  public void changeScene(Scene scene) {
+    primaryStage.setScene(scene);
+    if (!(primaryStage.isShowing())) {
+      primaryStage.show();
+    }
   }
 
-  public void switchToMainMenu() {
-    mainStage.setScene(mainMenuScene);
+  public Stage getPrimaryStage() {
+    return primaryStage;
+  }
+
+  public MainMenuPresenter getMainMenu() {
+    return mainMenu;
+  }
+
+  public VisualPresenter getVisual() {
+    return visual;
+  }
+
+  public EndPresenter getEnd() {
+    return end;
   }
 }
