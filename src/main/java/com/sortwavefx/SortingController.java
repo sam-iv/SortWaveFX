@@ -26,7 +26,7 @@ public class SortingController implements IModelObserver {
 
   @FXML
   private void startButtonClicked() {
-    sortingModel = new SortingModel(100);
+    sortingModel = new SortingModel(50);
     sortingModel.setObserver(this);
     generateBars();
 
@@ -37,7 +37,7 @@ public class SortingController implements IModelObserver {
 
   private void generateBars() {
     double[] array = sortingModel.getArrayToSort();
-    
+
     GraphicsContext graphicsContext = barCanvas.getGraphicsContext2D();
     graphicsContext.clearRect(0, 0, barCanvas.getWidth(), barCanvas.getHeight());
 
@@ -69,7 +69,12 @@ public class SortingController implements IModelObserver {
 
   @Override
   public void onShuffleComplete() {
-    sortingModel.sort(Sorts.BUBBLE_SORT);
+    //sortingModel.sort(Sorts.BUBBLE_SORT);
+    System.out.println("Shuffle Complete!");
+
+    PauseTransition delayTransition = new PauseTransition(Duration.millis(500));
+    delayTransition.setOnFinished(event -> sortingModel.sort(Sorts.BUBBLE_SORT));
+    delayTransition.play();
   }
 
 }

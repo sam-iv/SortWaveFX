@@ -1,17 +1,23 @@
 package com.sortwavefx.Models;
 
 import com.sortwavefx.Models.Sorts.BubbleSort;
+import com.sortwavefx.Models.Sorts.Sort;
 import com.sortwavefx.Models.Sorts.Sorts;
 import java.util.Random;
-import javafx.animation.PauseTransition;
-import javafx.util.Duration;
 
 public class SortingModel {
 
   private final double[] arrayToSort;
   private final double maxValue;
+
+  //TODO update UI with this
   private int accesses = 0;
+
+  //TODO update UI with this
   private int swaps = 0;
+
+  //TODO make adjustable
+  private int stepDelay = 50;
   private IModelObserver observer;
 
   public SortingModel(int sortAmount) {
@@ -24,41 +30,37 @@ public class SortingModel {
   }
 
   public void shuffle() {
-    int numberOfSwaps = arrayToSort.length - 1;
-    shuffleRecursive(numberOfSwaps);
-  }
+    new Thread(() -> {
+      int n = arrayToSort.length - 1;
+      Random rng = new Random();
+      for (int i = n; i > 0; i--) {
+        int j = rng.nextInt(i + 1);
 
-  private void shuffleRecursive(int i) {
-    if (i > 0) {
-      Random r = new Random();
-      int j = r.nextInt(i + 1);
-      swap(i, j);
+        swap(i, j);
 
-      // Introduce a delay after each swap
-      PauseTransition pauseTransition = new PauseTransition(Duration.millis(100));
-      pauseTransition.setOnFinished(event -> {
-        notifyOnSwap(i, j);
-        shuffleRecursive(i - 1);
-      });
-      pauseTransition.play();
-    } else {
-      swaps = 0;
-      accesses = 0;
+        try {
+          Thread.sleep(stepDelay);
+        } catch (InterruptedException e) {
+          //TODO Catch exception.
+        }
+      }
       notifyOnShuffleComplete();
-    }
+    }).start();
   }
 
   public void sort(Sorts algorithm) {
     // TODO Validation
+    Sort sort;
     switch (algorithm) {
       case BUBBLE_SORT:
-        BubbleSort sort = new BubbleSort();
-        //sort.run(this);
+        sort = new BubbleSort(this);
         break;
       default:
         // TODO: Output error
+        sort = new BubbleSort(this);
         break;
     }
+    sort.start();
   }
 
   public void swap(int index1, int index2) {
@@ -69,6 +71,8 @@ public class SortingModel {
 
     accesses += 3;
     swaps++;
+
+    notifyOnSwap(index1, index2);
   }
 
   public void notifyOnSwap(int index1, int index2) {
@@ -103,6 +107,16 @@ public class SortingModel {
 
   public double getMaxValue() {
     return maxValue;
+  }
+
+  public int getStepDelay() {
+    return stepDelay;
+  }
+
+  public void setStepDelay(double stepDelay) {
+    //TODO Validation
+    int stepDelayInt = (int) stepDelay;
+    this.stepDelay = stepDelayInt;
   }
 
   public void setObserver(IModelObserver observer) {
