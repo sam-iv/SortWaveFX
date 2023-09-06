@@ -22,6 +22,4 @@ public abstract class Sort {
       // TODO handle exception.
     }
   }
-
-  public abstract String getName();
 }

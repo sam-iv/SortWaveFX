@@ -1,0 +1,11 @@
+.background-pane {
+  -fx-background-color: #2F2F2F;
+}
+
+.vbox {
+  -fx-background-color: #222222;
+}
+
+.controls {
+  -fx-background-color: #8D8D8D;
+}

@@ -1,5 +1,6 @@
 package com.sortwavefx.Models;
 
+import com.sortwavefx.Models.Sorts.AdaptiveBubbleSort;
 import com.sortwavefx.Models.Sorts.BubbleSort;
 import com.sortwavefx.Models.Sorts.Sort;
 import com.sortwavefx.Models.Sorts.Sorts;
@@ -9,15 +10,14 @@ public class SortingModel {
 
   private final double[] arrayToSort;
   private final double maxValue;
-
+  private final int comparisons = 0;
   //TODO update UI with this
   private int accesses = 0;
-
   //TODO update UI with this
   private int swaps = 0;
 
   //TODO make adjustable
-  private int stepDelay = 50;
+  private int stepDelay = 15;
   private IModelObserver observer;
 
   public SortingModel(int sortAmount) {
@@ -39,13 +39,15 @@ public class SortingModel {
         swap(i, j);
 
         try {
-          Thread.sleep(stepDelay);
+          Thread.sleep(25);
         } catch (InterruptedException e) {
           //TODO Catch exception.
         }
       }
       notifyOnShuffleComplete();
     }).start();
+    accesses = 0;
+    swaps = 0;
   }
 
   public void sort(Sorts algorithm) {
@@ -54,6 +56,9 @@ public class SortingModel {
     switch (algorithm) {
       case BUBBLE_SORT:
         sort = new BubbleSort(this);
+        break;
+      case ADAPTIVE_BUBBLE_SORT:
+        sort = new AdaptiveBubbleSort(this);
         break;
       default:
         // TODO: Output error
@@ -70,14 +75,27 @@ public class SortingModel {
     arrayToSort[index2] = tmp;
 
     accesses += 3;
-    swaps++;
 
     notifyOnSwap(index1, index2);
   }
 
-  public void notifyOnSwap(int index1, int index2) {
+  public Boolean compare(int index1, int index2) {
+    notifyOnCompare(index1, index2);
+    return arrayToSort[index1] < arrayToSort[index2];
+  }
+
+  private void notifyOnCompare(int index1, int index2) {
+    if (observer != null) {
+      observer.onCompare(index1, index2);
+    } else {
+      // TODO throw an error.
+    }
+  }
+
+  private void notifyOnSwap(int index1, int index2) {
     if (observer != null) {
       observer.onSwap(index1, index2);
+      swaps++;
     } else {
       // TODO throw an error.
     }
