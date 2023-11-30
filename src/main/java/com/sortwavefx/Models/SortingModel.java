@@ -127,8 +127,6 @@ public class SortingModel {
   private void notifyOnCompare(int index1, int index2) {
     if (observer != null) {
       observer.onCompare(index1, index2);
-    } else {
-      // TODO throw an error.
     }
   }
 
@@ -141,8 +139,6 @@ public class SortingModel {
     if (observer != null) {
       observer.onSwap(index1, index2);
       swaps++;
-    } else {
-      // TODO throw an error.
     }
   }
 
@@ -152,8 +148,6 @@ public class SortingModel {
   private void notifyOnShuffleComplete() {
     if (observer != null) {
       observer.onShuffleComplete();
-    } else {
-      // TODO throw an error
     }
   }
 

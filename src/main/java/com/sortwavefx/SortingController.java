@@ -82,7 +82,7 @@ public class SortingController implements IModelObserver {
     @FXML
     private void startButtonClicked() {
         // Create the model and assign an observer of the model, (which is the controller).
-        sortingModel = new SortingModel(50);
+        sortingModel = new SortingModel(25);
         sortingModel.setObserver(this);
 
         // Generate the bars for visualisation.
