@@ -1,6 +1,7 @@
 package com.sortwavefx.Models;
 
 import com.sortwavefx.Models.Sorts.AdaptiveBubbleSort;
+import com.sortwavefx.Models.Sorts.BogoSort;
 import com.sortwavefx.Models.Sorts.BubbleSort;
 import com.sortwavefx.Models.Sorts.Sort;
 import com.sortwavefx.Models.Sorts.Sorts;
@@ -76,19 +77,11 @@ public class SortingModel {
    */
   public void sort(Sorts algorithm) {
     // TODO Validation
-    Sort sort;
-    switch (algorithm) {
-      case BUBBLE_SORT:
-        sort = new BubbleSort(this);
-        break;
-      case ADAPTIVE_BUBBLE_SORT:
-        sort = new AdaptiveBubbleSort(this);
-        break;
-      default:
-        // TODO: Output error
-        sort = new BubbleSort(this);
-        break;
-    }
+    Sort sort = switch (algorithm) {
+      case BUBBLE_SORT -> new BubbleSort(this);
+      case ADAPTIVE_BUBBLE_SORT -> new AdaptiveBubbleSort(this);
+      case BOGO_SORT -> new BogoSort(this);
+    };
     sort.start();
   }
 

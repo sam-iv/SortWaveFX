@@ -6,7 +6,8 @@ package com.sortwavefx.Models.Sorts;
  * @author Samuel Ivuerah
  */
 public enum Sorts {
-  BUBBLE_SORT("Bubble Sort"), ADAPTIVE_BUBBLE_SORT("Adaptive Bubble Sort");
+  BUBBLE_SORT("Bubble Sort"), ADAPTIVE_BUBBLE_SORT("Adaptive Bubble Sort"),
+  BOGO_SORT("Bogo Sort");
 
   /** The readable name for each sort. */
   private final String readableName;
