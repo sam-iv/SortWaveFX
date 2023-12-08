@@ -77,7 +77,7 @@
                   <Insets bottom="5.0" />
                </VBox.margin>
             </Text>
-            <TextField fx:id="amountTextField" promptText="5 - " styleClass="controls">
+            <TextField fx:id="amountTextField" promptText="5 - 100" styleClass="controls">
                <VBox.margin>
                   <Insets bottom="125.0" />
                </VBox.margin>
@@ -90,7 +90,7 @@
                   <Insets bottom="5.0" />
                </VBox.margin>
             </Text>
-            <Slider fx:id="delaySlider" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+            <Slider fx:id="delaySlider" max="130.0" min="10.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
                <VBox.margin>
                   <Insets bottom="150.0" />
                </VBox.margin>

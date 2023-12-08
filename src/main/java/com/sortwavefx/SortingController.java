@@ -59,6 +59,12 @@ public class SortingController implements IModelObserver {
     private int lastComparedIndex1 = -1;
     private int lastComparedIndex2 = -1;
 
+    /** The amount of items to be sorted. */
+    private int amountToSort;
+
+    /** The delay between each step. */
+    private double delay;
+
     /**
      * An initialisation method, called after @FXML member have been loaded,
      * used to initialise the controller.
@@ -74,6 +80,20 @@ public class SortingController implements IModelObserver {
 
         // Updating the sorting algorithm title.
         updateSortText();
+
+        // Add a ChangeListener to amountTextField
+        amountTextField.textProperty().addListener((observable, oldValue, newValue) -> { //TODO: Validation
+            try {
+                amountToSort = Integer.parseInt(newValue);
+            } catch (NumberFormatException e) {
+                // Handle exception when newValue is not a valid integer
+            }
+        });
+
+        // Add a ChangeListener to delaySlider
+        delaySlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            delay = newValue.doubleValue();
+        });
     }
 
     /**
@@ -82,8 +102,9 @@ public class SortingController implements IModelObserver {
     @FXML
     private void startButtonClicked() {
         // Create the model and assign an observer of the model, (which is the controller).
-        sortingModel = new SortingModel(25);
+        sortingModel = new SortingModel(amountToSort);
         sortingModel.setObserver(this);
+        sortingModel.setStepDelay(delay);
 
         // Generate the bars for visualisation.
         generateBars();
@@ -136,6 +157,7 @@ public class SortingController implements IModelObserver {
     /**
      * A method to handle the onSwap event in {@link SortingModel} through {@link IModelObserver}.
      * It will visualise the swapping of two bars based on the indexes provided.
+     *
      * @param index1 The index of one of the parties in the swap.
      * @param index2 The index of one of the parties in the swap.
      */
@@ -182,19 +204,11 @@ public class SortingController implements IModelObserver {
      */
     @Override
     public void onCompare(int index1, int index2) {
-        // Validation of the indexes.
         Platform.runLater(() -> {
             if (index1 < 0 || index2 < 0 || index1 >= barBox.getChildren().size() ||
-                    index2 >= barBox.getChildren().size() || index1 == index2) {
+                index2 >= barBox.getChildren().size() || index1 == index2) {
                 return; // Invalid indices or same indices, do nothing
             }
-
-            // Set compare color to the bars at index1 and index2
-            Rectangle bar1 = (Rectangle) barBox.getChildren().get(index1);
-            Rectangle bar2 = (Rectangle) barBox.getChildren().get(index2);
-
-            bar1.setFill(compareColour);
-            bar2.setFill(compareColour);
 
             // Remove compare color from the last compared bars (if any)
             if (lastComparedIndex1 != -1 && lastComparedIndex2 != -1) {
@@ -204,6 +218,13 @@ public class SortingController implements IModelObserver {
                 lastBar1.setFill(defaultColour);
                 lastBar2.setFill(defaultColour);
             }
+
+            // Set compare color to the bars at index1 and index2
+            Rectangle bar1 = (Rectangle) barBox.getChildren().get(index1);
+            Rectangle bar2 = (Rectangle) barBox.getChildren().get(index2);
+
+            bar1.setFill(compareColour);
+            bar2.setFill(compareColour);
 
             // Update the last compared indices
             lastComparedIndex1 = index1;
