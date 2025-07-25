@@ -8,6 +8,6 @@ module com.sortwavefx {
     requires org.kordamp.ikonli.javafx;
     requires com.almasb.fxgl.all;
 
-    opens com.sortwavefx to javafx.fxml;
-    exports com.sortwavefx;
+    opens io.github.samiv.sortwavefx to javafx.fxml;
+    exports io.github.samiv.sortwavefx;
 }
