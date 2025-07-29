@@ -1,4 +1,4 @@
-module com.sortwavefx {
+module io.github.samiv.sortwavefx {
     requires javafx.controls;
     requires javafx.fxml;
 
