@@ -1,9 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="SortWaveFXApp" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="com.sortwavefx.SortWaveFXApp" />
-    <module name="SortWaveFX" />
-    <method v="2">
-      <option name="Make" enabled="true" />
-    </method>
-  </configuration>
-</component>
