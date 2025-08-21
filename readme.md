@@ -1,6 +1,8 @@
 # SortWaveFX
 
-A fairly simple and interactive application for visualising various sorting algorithms, built using JavaFX.
+A fairly simple and interactive application for visualising various sorting algorithms, built using JavaFX. 
+
+**Note:** This a reboot of and older project, currently being reengineered from scratch to improve its design and architecture by employing better design practices. The code in the [**main**](https://github.com/sam-iv/SortWaveFX/) branch represents my first attempt at this project. This branch is currently under active development.
 
 ## Getting Started
 
