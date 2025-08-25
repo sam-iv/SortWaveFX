@@ -1,0 +1,35 @@
+# Name for your workflow (shown on GitHub)
+name: Java CI with Maven
+
+# This section defines the trigger for the workflow.
+on:
+  # Run this workflow on every push to the "main" branch.
+  push:
+    branches: [ "main", "1-reboot-project" ]
+  # Also run it on pull requests that target the "main" branch.
+  pull_request:
+    branches: [ "main", "1-reboot-project" ]
+
+# This section defines the job(s) to be run.
+jobs:
+  build:
+    # The type of virtual machine to run the job on. 'ubuntu-latest' is a standard, reliable choice.
+    runs-on: ubuntu-latest
+
+    # A sequence of tasks that will be executed as part of the job.
+    steps:
+      # Checks out your repository's code so the workflow can access it.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Sets up the specified version of Java (JDK).
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin' # A popular, free distribution of OpenJDK.
+
+      # Runs the tests using the Maven Wrapper.
+      # The 'test' goal automatically compiles your code and runs all JUnit tests.
+      - name: Run tests with Maven
+        run: ./mvnw test
