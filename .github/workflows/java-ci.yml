@@ -27,7 +27,8 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '21'
-          distribution: 'temurin' # A popular, free distribution of OpenJDK.
+          # A popular, free distribution of OpenJDK.
+          distribution: 'temurin'
 
       # Runs the tests using the Maven Wrapper.
       # The 'test' goal automatically compiles your code and runs all JUnit tests.
