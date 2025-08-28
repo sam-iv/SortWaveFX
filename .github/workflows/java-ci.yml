@@ -12,7 +12,7 @@ on:
 
 # This section defines the job(s) to be run.
 jobs:
-  build:
+  build-and-test:
     # The type of virtual machine to run the job on. 'ubuntu-latest' is a standard, reliable choice.
     runs-on: ubuntu-latest
 
