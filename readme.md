@@ -16,10 +16,10 @@ SortWaveFX is built with Apache Maven. Please ensure you have [**JDK21**](https:
 2. Go to the project directory and run the application using Maven:
    ```bash
    # For Windows (Or in Intellij)
-   mvnw clean javafx:run
+   mvn clean javafx:run
    
    # For macOS/Linux
-   ./mvnw clean javafx:run
+   ./mvn clean javafx:run
    ```
 ## How to Use
 

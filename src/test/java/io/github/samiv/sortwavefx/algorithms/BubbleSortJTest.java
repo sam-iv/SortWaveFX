@@ -5,10 +5,11 @@ import io.github.samiv.sortwavefx.model.SortAction;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BubbleSortJTest {
-
     BubbleSort bubbleSort = new BubbleSort();
 
     @Test
@@ -16,6 +17,9 @@ public class BubbleSortJTest {
     public void testUnsortedArray() {
         // Setup
         int[] testArray = {5, 1, 4, 2, 8};
+        int[] expectedArray = testArray.clone();
+
+        Arrays.sort(expectedArray);
         bubbleSort.setup(testArray);
 
         // Test
@@ -24,7 +28,6 @@ public class BubbleSortJTest {
         }
 
         // Verify
-        int[] expectedArray = {1, 2, 4, 5, 8};
         assertArrayEquals(expectedArray, bubbleSort.getArray());
     }
 
@@ -33,6 +36,7 @@ public class BubbleSortJTest {
     public void testSortedArray() {
         // Setup
         int[] testArray = {1, 2, 3, 4, 5};
+        int[] expectedArray = testArray.clone();
         bubbleSort.setup(testArray);
 
         // Test
@@ -41,7 +45,7 @@ public class BubbleSortJTest {
         }
 
         // Verify
-        assertArrayEquals(testArray, bubbleSort.getArray());
+        assertArrayEquals(expectedArray, bubbleSort.getArray());
     }
 
     @Test
@@ -49,6 +53,7 @@ public class BubbleSortJTest {
     public void testDuplicateElements() {
         // Setup
         int[] testArray = {9, 1, 7, 1, 9};
+        int[] expectedArray = {1, 1, 7, 9, 9};
         bubbleSort.setup(testArray);
 
         // Test
@@ -57,7 +62,6 @@ public class BubbleSortJTest {
         }
 
         // Verify
-        int[] expectedArray = {1, 1, 7, 9, 9};
         assertArrayEquals(expectedArray, testArray);
     }
 
@@ -66,15 +70,13 @@ public class BubbleSortJTest {
     public void testOneElement() {
         // Setup
         int[] testArray = {21};
+        int[] expectedArray = testArray.clone();
         bubbleSort.setup(testArray);
 
-        // Test
-        while (!bubbleSort.isDone()) {
-            bubbleSort.step();
-        }
-
         // Verify
-        assertArrayEquals(testArray, bubbleSort.getArray());
+        assertTrue(bubbleSort.isDone(), "An array of size 1 should be considered sorted immediately after " +
+                "setup");
+        assertArrayEquals(expectedArray, bubbleSort.getArray());
     }
 
     @Test
@@ -82,6 +84,7 @@ public class BubbleSortJTest {
     public void testEmptyArray() {
         // Setup
         int[] testArray = {};
+        int[] expectedArray = testArray.clone();
         bubbleSort.setup(testArray);
 
         // Test
@@ -90,7 +93,8 @@ public class BubbleSortJTest {
         }
 
         // Verify
-        assertArrayEquals(testArray, bubbleSort.getArray());
+        assertTrue(bubbleSort.isDone(), "An empty array should be considered sorted immediately after setup");
+        assertArrayEquals(expectedArray, bubbleSort.getArray());
     }
 
     @Test
