@@ -2,6 +2,7 @@ package io.github.samiv.sortwavefx.ui;
 
 import io.github.samiv.sortwavefx.algorithms.BubbleSort;
 import io.github.samiv.sortwavefx.algorithms.FisherYatesShuffle;
+import io.github.samiv.sortwavefx.model.Algorithm;
 import io.github.samiv.sortwavefx.model.SortAction;
 import io.github.samiv.sortwavefx.model.SortingAlgorithm;
 import io.github.samiv.sortwavefx.task.SortAndVisualTask;
@@ -11,6 +12,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -20,6 +22,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.Arrays;
@@ -39,6 +42,12 @@ public class MainController {
     @FXML
     private HBox barContainer;
 
+    @FXML
+    private ComboBox<Algorithm> sortComboBox;
+
+    @FXML
+    private Text sortText;
+
     private final int userSelectedSize = 30; // TODO: Make it changeable
 
     /** An array that is the true state for the visualisation/sort, modified in-place by {@link SortingAlgorithm}'s */
@@ -50,8 +59,26 @@ public class MainController {
     private final String BAR_STYLE_ORIGINAL = "-fx-background-color: #0099ff;";
     private final String BAR_STYLE_COMPARE = "-fx-background-color: #66ccff;";
 
+    /**
+     * A FXML method that is automatically invoked after the FXML elements are loaded
+     * but before UI is displayed.
+     * <p>
+     * Responsible for:
+     * <ul>
+     *     <li>{@link ComboBox} Initialisation</li>
+     *     <li>{@link Text} Initialisation</li>
+     *     <li>{@link Media} & {@link MediaPlayer} Initialisation</li>
+     * </ul>
+     */
     @FXML
     public void initialize() {
+        // ComboBox setup
+        sortComboBox.getItems().addAll(Algorithm.values());
+        sortComboBox.setValue(Algorithm.BUBBLE_SORT);
+
+        // SortText setup
+        sortText.setText(Algorithm.BUBBLE_SORT.getDisplayName());
+
         // Sound setup
         String swapSoundPath = "/io/github/samiv/sortwavefx/sounds/swap.wav";
         String compareSoundPath = "/io/github/samiv/sortwavefx/sounds/compare.wav";
@@ -68,6 +95,15 @@ public class MainController {
         } catch (Exception e) {
             System.err.println("Couldn't load sound files: " + e.getMessage());
         }
+    }
+
+    /**
+     * A simple FXML method that is invoked onAction of the {@code sortComboBox} to update
+     * the title of the sort.
+     */
+    @FXML
+    public void updateSortText() {
+        sortText.setText(sortComboBox.getValue().getDisplayName());
     }
 
     /**
@@ -138,7 +174,7 @@ public class MainController {
         bar1.setStyle(BAR_STYLE_COMPARE);
         bar2.setStyle(BAR_STYLE_COMPARE);
 
-        PauseTransition pause = new PauseTransition(Duration.millis(10));
+        PauseTransition pause = new PauseTransition(Duration.millis(50));
 
         pause.setOnFinished(actionEvent -> {
             bar1.setStyle(BAR_STYLE_ORIGINAL);
@@ -168,12 +204,11 @@ public class MainController {
 
         SortingAlgorithm shuffle = new FisherYatesShuffle();
         shuffle.setup(this.currentArray);
-        SortAndVisualTask shuffleTask = new SortAndVisualTask(shuffle, 50);
+        SortAndVisualTask shuffleTask = new SortAndVisualTask(shuffle, 60);
 
-        // TODO: Hardcoded for a simple test
-        SortingAlgorithm sort = new BubbleSort();
+        SortingAlgorithm sort = sortComboBox.getValue().createInstance();
         sort.setup(this.currentArray);
-        SortAndVisualTask sortTask = new SortAndVisualTask(sort, 50);
+        SortAndVisualTask sortTask = new SortAndVisualTask(sort, 100);
 
         // A listener to handle UI animations dependent on SortAction.
         ChangeListener<SortAction> animationListener = (obs, oldAction,

@@ -89,7 +89,7 @@
                               <Insets left="10.0" right="10.0" />
                            </padding>
                             </Slider>
-                            <ComboBox fx:id="sortComboBox" prefHeight="25.0" prefWidth="211.0" styleClass="controls">
+                            <ComboBox fx:id="sortComboBox" onAction="#updateSortText" prefHeight="25.0" prefWidth="211.0" styleClass="controls">
                                 <VBox.margin>
                                     <Insets bottom="10.0" left="10.0" right="10.0" />
                                 </VBox.margin>
