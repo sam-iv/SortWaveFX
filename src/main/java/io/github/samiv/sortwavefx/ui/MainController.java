@@ -11,7 +11,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
@@ -32,21 +35,24 @@ import java.util.Objects;
  * @see SortAndVisualTask
  */
 public class MainController {
-    /** The container that holds the visual {@link Rectangle} bars. */
+    /** The container that holds the visual {@link Region} bars. */
     @FXML
     private HBox barContainer;
 
-    private final int userSelectedSize = 50; // TODO: Make it changeable
+    private final int userSelectedSize = 30; // TODO: Make it changeable
 
     /** An array that is the true state for the visualisation/sort, modified in-place by {@link SortingAlgorithm}'s */
     private int[] currentArray;
 
     private MediaPlayer swapMediaPlayer;
-
     private MediaPlayer compareMediaPlayer;
+
+    private final String BAR_STYLE_ORIGINAL = "-fx-background-color: #0099ff;";
+    private final String BAR_STYLE_COMPARE = "-fx-background-color: #66ccff;";
 
     @FXML
     public void initialize() {
+        // Sound setup
         String swapSoundPath = "/io/github/samiv/sortwavefx/sounds/swap.wav";
         String compareSoundPath = "/io/github/samiv/sortwavefx/sounds/compare.wav";
 
@@ -66,7 +72,7 @@ public class MainController {
 
     /**
      * A method to generate and display bars. It makes use of an {@link ArrayUtil} utility class to generate an array
-     * of integers in ascending sequential order, the method uses said array to create {@link Rectangle} nodes to be
+     * of integers in ascending sequential order, the method uses said array to create {@link Region} nodes to be
      * displayed in the {@code barContainer}.
      *
      * @param size The number of bars to be generated and displayed.
@@ -75,7 +81,6 @@ public class MainController {
      */
     private void generateAndDisplayBars(int size) {
         double maxBarHeight = barContainer.getHeight();
-        double barWidth = barContainer.getWidth() / size;
 
         this.currentArray = ArrayUtil.generateArray(size);
 
@@ -83,11 +88,16 @@ public class MainController {
         barContainer.setSpacing(5);
 
         for (int value : this.currentArray) {
-            double barHeight = maxBarHeight * ((double) value / size);
+            Region bar = new Region();
 
-            Rectangle rectangle = new Rectangle(barWidth, barHeight);
-            rectangle.setFill(Color.web("#0099ff"));
-            barContainer.getChildren().add(rectangle);
+            // Allow barContainer to control each bar's width
+            HBox.setHgrow(bar, Priority.ALWAYS);
+
+            bar.setStyle(BAR_STYLE_ORIGINAL);
+
+            double barHeight = maxBarHeight * ((double) value / size);
+            bar.setPrefHeight(barHeight);
+            barContainer.getChildren().add(bar);
         }
     }
 
@@ -124,17 +134,15 @@ public class MainController {
      * @param bar1 The first bar being compared
      * @param bar2 The second bar being compared
      */
-    private void compareBars(Rectangle bar1, Rectangle bar2) {
-        Paint originalColour = bar1.getFill();
+    private void compareBars(Region bar1, Region bar2) {
+        bar1.setStyle(BAR_STYLE_COMPARE);
+        bar2.setStyle(BAR_STYLE_COMPARE);
 
-        bar1.setFill(Color.YELLOW);
-        bar2.setFill(Color.YELLOW);
-
-        PauseTransition pause = new PauseTransition(Duration.millis(50));
+        PauseTransition pause = new PauseTransition(Duration.millis(10));
 
         pause.setOnFinished(actionEvent -> {
-            bar1.setFill(originalColour);
-            bar2.setFill(originalColour);
+            bar1.setStyle(BAR_STYLE_ORIGINAL);
+            bar2.setStyle(BAR_STYLE_ORIGINAL);
         });
 
         pause.play();
@@ -160,12 +168,12 @@ public class MainController {
 
         SortingAlgorithm shuffle = new FisherYatesShuffle();
         shuffle.setup(this.currentArray);
-        SortAndVisualTask shuffleTask = new SortAndVisualTask(shuffle, 100);
+        SortAndVisualTask shuffleTask = new SortAndVisualTask(shuffle, 50);
 
         // TODO: Hardcoded for a simple test
         SortingAlgorithm sort = new BubbleSort();
         sort.setup(this.currentArray);
-        SortAndVisualTask sortTask = new SortAndVisualTask(sort, 100);
+        SortAndVisualTask sortTask = new SortAndVisualTask(sort, 50);
 
         // A listener to handle UI animations dependent on SortAction.
         ChangeListener<SortAction> animationListener = (obs, oldAction,
@@ -177,8 +185,8 @@ public class MainController {
             int[] indices = newAction.indices();
             ObservableList<Node> bars = barContainer.getChildren();
 
-            Rectangle bar1 = (Rectangle) bars.get(indices[0]);
-            Rectangle bar2 = (Rectangle) bars.get(indices[1]);
+            Region bar1 = (Region) bars.get(indices[0]);
+            Region bar2 = (Region) bars.get(indices[1]);
 
             switch (newAction.actionType()) {
                 case SWAP:
