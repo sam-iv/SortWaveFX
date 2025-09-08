@@ -7,19 +7,21 @@ A fairly simple and interactive application for visualising various sorting algo
 ## Getting Started
 
 SortWaveFX is built with Apache Maven. Please ensure you have [**JDK21**](https://learn.microsoft.com/en-gb/java/openjdk/download)
-(or newer) and Maven installed on your system.
+(or newer).
 
 1. Clone the repository:
    ```bash
    git clone https://github.com/sam-iv/SortWaveFX.git
    ```
 2. Go to the project directory and run the application using Maven:
+
+3. ### For Windows (Powershell)
+   ```powershell
+   .\mvnw clean javafx:run
+   ```
+   ### For MacOS/Linux
    ```bash
-   # For Windows (Or in Intellij)
-   mvn clean javafx:run
-   
-   # For macOS/Linux
-   ./mvn clean javafx:run
+   ./mvnw clean javafx:run
    ```
 ## How to Use
 

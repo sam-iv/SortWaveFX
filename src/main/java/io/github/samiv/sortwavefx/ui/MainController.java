@@ -12,12 +12,15 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * A controller for the main application view ({@code MainView.fxml}).
@@ -38,8 +41,27 @@ public class MainController {
     /** An array that is the true state for the visualisation/sort, modified in-place by {@link SortingAlgorithm}'s */
     private int[] currentArray;
 
+    private MediaPlayer swapMediaPlayer;
+
+    private MediaPlayer compareMediaPlayer;
+
     @FXML
     public void initialize() {
+        String swapSoundPath = "/io/github/samiv/sortwavefx/sounds/swap.wav";
+        String compareSoundPath = "/io/github/samiv/sortwavefx/sounds/compare.wav";
+
+        try {
+            Media swapMedia = new Media(Objects.requireNonNull(getClass()
+                    .getResource(swapSoundPath), swapSoundPath).toExternalForm());
+
+            Media compareMedia = new Media(Objects.requireNonNull(getClass()
+                    .getResource(compareSoundPath), compareSoundPath).toExternalForm());
+
+            this.swapMediaPlayer = new MediaPlayer(swapMedia);
+            this.compareMediaPlayer = new MediaPlayer(compareMedia);
+        } catch (Exception e) {
+            System.err.println("Couldn't load sound files: " + e.getMessage());
+        }
     }
 
     /**
@@ -108,7 +130,7 @@ public class MainController {
         bar1.setFill(Color.YELLOW);
         bar2.setFill(Color.YELLOW);
 
-        PauseTransition pause = new PauseTransition(Duration.millis(100));
+        PauseTransition pause = new PauseTransition(Duration.millis(50));
 
         pause.setOnFinished(actionEvent -> {
             bar1.setFill(originalColour);
@@ -138,12 +160,12 @@ public class MainController {
 
         SortingAlgorithm shuffle = new FisherYatesShuffle();
         shuffle.setup(this.currentArray);
-        SortAndVisualTask shuffleTask = new SortAndVisualTask(shuffle, 250);
+        SortAndVisualTask shuffleTask = new SortAndVisualTask(shuffle, 100);
 
         // TODO: Hardcoded for a simple test
         SortingAlgorithm sort = new BubbleSort();
         sort.setup(this.currentArray);
-        SortAndVisualTask sortTask = new SortAndVisualTask(sort, 500);
+        SortAndVisualTask sortTask = new SortAndVisualTask(sort, 100);
 
         // A listener to handle UI animations dependent on SortAction.
         ChangeListener<SortAction> animationListener = (obs, oldAction,
@@ -165,10 +187,16 @@ public class MainController {
                         swapBars(bars, indices[0], indices[1]);
                         System.out.println(Arrays.toString(currentArray));
                     }
+
+                    swapMediaPlayer.seek(Duration.ZERO);
+                    swapMediaPlayer.play();
                     break;
 
                 case COMPARE:
                     compareBars(bar1, bar2);
+
+                    compareMediaPlayer.seek(Duration.ZERO);
+                    compareMediaPlayer.play();
                     break;
             }
         };
@@ -177,7 +205,7 @@ public class MainController {
         shuffleTask.valueProperty().addListener(animationListener);
         sortTask.valueProperty().addListener(animationListener);
 
-        // Chain the tasks (When shuffle task succeeds, star the sort task.
+        // Chain the tasks (When shuffle task succeeds, start the sort task).
         shuffleTask.setOnSucceeded(workerStateEvent -> {
             new Thread(sortTask).start();
         });
