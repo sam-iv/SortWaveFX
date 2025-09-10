@@ -13,6 +13,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -38,15 +39,14 @@ import java.util.Objects;
  * @see SortAndVisualTask
  */
 public class MainController {
-    /** The container that holds the visual {@link Region} bars. */
     @FXML
     private HBox barContainer;
-
     @FXML
     private ComboBox<Algorithm> sortComboBox;
-
     @FXML
     private Text sortText;
+    @FXML
+    private Slider delaySlider;
 
     private final int userSelectedSize = 30; // TODO: Make it changeable
 
@@ -121,7 +121,7 @@ public class MainController {
         this.currentArray = ArrayUtil.generateArray(size);
 
         barContainer.getChildren().clear();
-        barContainer.setSpacing(5);
+        barContainer.setSpacing(1);
 
         for (int value : this.currentArray) {
             Region bar = new Region();
@@ -173,8 +173,7 @@ public class MainController {
     private void compareBars(Region bar1, Region bar2) {
         bar1.setStyle(BAR_STYLE_COMPARE);
         bar2.setStyle(BAR_STYLE_COMPARE);
-
-        PauseTransition pause = new PauseTransition(Duration.millis(50));
+        PauseTransition pause = new PauseTransition(Duration.millis(delaySlider.getValue() * 0.75));
 
         pause.setOnFinished(actionEvent -> {
             bar1.setStyle(BAR_STYLE_ORIGINAL);
@@ -204,11 +203,11 @@ public class MainController {
 
         SortingAlgorithm shuffle = new FisherYatesShuffle();
         shuffle.setup(this.currentArray);
-        SortAndVisualTask shuffleTask = new SortAndVisualTask(shuffle, 60);
+        SortAndVisualTask shuffleTask = new SortAndVisualTask(shuffle, (long) delaySlider.getValue());
 
         SortingAlgorithm sort = sortComboBox.getValue().createInstance();
         sort.setup(this.currentArray);
-        SortAndVisualTask sortTask = new SortAndVisualTask(sort, 100);
+        SortAndVisualTask sortTask = new SortAndVisualTask(sort, (long) delaySlider.getValue());
 
         // A listener to handle UI animations dependent on SortAction.
         ChangeListener<SortAction> animationListener = (obs, oldAction,
