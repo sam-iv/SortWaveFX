@@ -1,6 +1,5 @@
 package io.github.samiv.sortwavefx.ui;
 
-import io.github.samiv.sortwavefx.algorithms.BubbleSort;
 import io.github.samiv.sortwavefx.algorithms.FisherYatesShuffle;
 import io.github.samiv.sortwavefx.model.Algorithm;
 import io.github.samiv.sortwavefx.model.SortAction;
@@ -12,22 +11,21 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * A controller for the main application view ({@code MainView.fxml}).
@@ -47,8 +45,8 @@ public class MainController {
     private Text sortText;
     @FXML
     private Slider delaySlider;
-
-    private final int userSelectedSize = 30; // TODO: Make it changeable
+    @FXML
+    private TextField amountTextField;
 
     /** An array that is the true state for the visualisation/sort, modified in-place by {@link SortingAlgorithm}'s */
     private int[] currentArray;
@@ -57,6 +55,7 @@ public class MainController {
     private MediaPlayer compareMediaPlayer;
 
     private final String BAR_STYLE_ORIGINAL = "-fx-background-color: #0099ff;";
+    @SuppressWarnings("FieldCanBeLocal")
     private final String BAR_STYLE_COMPARE = "-fx-background-color: #66ccff;";
 
     /**
@@ -65,9 +64,10 @@ public class MainController {
      * <p>
      * Responsible for:
      * <ul>
-     *     <li>{@link ComboBox} Initialisation</li>
-     *     <li>{@link Text} Initialisation</li>
-     *     <li>{@link Media} & {@link MediaPlayer} Initialisation</li>
+     *     <li>{@link ComboBox} ({@link #sortComboBox}) Initialisation</li>
+     *     <li>{@link Text} ({@link #sortText}) Initialisation</li>
+     *     <li>{@link Media} & {@link MediaPlayer} ({@link #swapMediaPlayer}, {@link #compareMediaPlayer})
+     *     Initialisation</li>
      * </ul>
      */
     @FXML
@@ -107,6 +107,44 @@ public class MainController {
     }
 
     /**
+     * A method to display Error Alert Box with custom content and title.
+     *
+     * @param typeOfError The type of error, to be used as the title for the box.
+     * @param message The custom error, will be used as the content for the box.
+     */
+    @SuppressWarnings("SameParameterValue")
+    private void showError(String typeOfError, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(typeOfError);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    /**
+     * A method to get and validate the entry from the {@link #amountTextField}. It uses
+     * {@link #showError(String, String)} to display alert to the user if the entry fails validation.
+     *
+     * @return An optional container of Integer of the string if it can be converted to an int between 5 - 100,
+     * otherwise empty.
+     * 
+     * @see #showError(String, String) 
+     */
+    private Optional<Integer> getAmountTextFieldValue() {
+        try {
+            int output = Integer.parseInt(amountTextField.getText());
+            if (output >= 5 && output <= 100) {
+                return Optional.of(output);
+            } else {
+                showError("Input Error", "Please enter a valid number (5 - 100)");
+                return Optional.empty();
+            }
+        } catch (NumberFormatException e) {
+            showError("Input Error", "Please enter a valid number (5 - 100)");
+            return Optional.empty();
+        }
+    }
+
+    /**
      * A method to generate and display bars. It makes use of an {@link ArrayUtil} utility class to generate an array
      * of integers in ascending sequential order, the method uses said array to create {@link Region} nodes to be
      * displayed in the {@code barContainer}.
@@ -128,7 +166,7 @@ public class MainController {
 
             // Allow barContainer to control each bar's width
             HBox.setHgrow(bar, Priority.ALWAYS);
-
+            bar.setMinWidth(0);
             bar.setStyle(BAR_STYLE_ORIGINAL);
 
             double barHeight = maxBarHeight * ((double) value / size);
@@ -189,17 +227,27 @@ public class MainController {
      * The method orchestrates the entire visualisation sequence:
      * <ul>
      *     <li>It generates a new set of bars by invoking {@link #generateAndDisplayBars(int)} passing
-     *     {@code userSelectedSize} as the size.</li>
-     *     <li>It creates and runs {@link SortAndVisualTask}s to animate both the visualisation of the shuffle and
+     *     {@code size} as the size, created from {@link #getAmountTextFieldValue()}</li>
+     *     <li>It creates and runs {@link SortAndVisualTask}s and uses {@link #swapBars(ObservableList, int, int)} and
+     *      {@link #compareBars(Region, Region)} to animate both the visualisation of the shuffle and
      *      sorting, where the shuffle task is chained to the animate task; hence, after the shuffle is complete, the
      *      sort begins.</li>
      * </ul>
      *
      * @see SortAndVisualTask
+     * @see #generateAndDisplayBars(int)
+     * @see #getAmountTextFieldValue()
+     * @see #swapBars(ObservableList, int, int)
+     * @see #compareBars(Region, Region)
      */
     @FXML
     private void startButtonClicked() {
-        generateAndDisplayBars(userSelectedSize);
+        Optional<Integer> size = getAmountTextFieldValue();
+        if (size.isEmpty()) {
+            return;
+        }
+
+        generateAndDisplayBars(size.get());
 
         SortingAlgorithm shuffle = new FisherYatesShuffle();
         shuffle.setup(this.currentArray);
@@ -248,9 +296,7 @@ public class MainController {
         sortTask.valueProperty().addListener(animationListener);
 
         // Chain the tasks (When shuffle task succeeds, start the sort task).
-        shuffleTask.setOnSucceeded(workerStateEvent -> {
-            new Thread(sortTask).start();
-        });
+        shuffleTask.setOnSucceeded(workerStateEvent -> new Thread(sortTask).start());
 
         // Start the visualisation by first running the shuffle task on a new thread.
         new Thread(shuffleTask).start();
