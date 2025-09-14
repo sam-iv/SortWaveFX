@@ -275,7 +275,6 @@ public class MainController {
                     compareBars(bar1, bar2);
                     if (indices[0] != indices[1]) {
                         swapBars(bars, indices[0], indices[1]);
-                        System.out.println(Arrays.toString(currentArray));
                     }
 
                     swapMediaPlayer.seek(Duration.ZERO);
@@ -296,9 +295,16 @@ public class MainController {
         sortTask.valueProperty().addListener(animationListener);
 
         // Chain the tasks (When shuffle task succeeds, start the sort task).
-        shuffleTask.setOnSucceeded(workerStateEvent -> new Thread(sortTask).start());
+        shuffleTask.setOnSucceeded(workerStateEvent -> {
+            PauseTransition sortPause = new PauseTransition(Duration.millis(700));
+            sortPause.setOnFinished(actionEvent -> new Thread(sortTask).start());
+            sortPause.play();
+        });
 
         // Start the visualisation by first running the shuffle task on a new thread.
-        new Thread(shuffleTask).start();
+        PauseTransition shufflePause = new PauseTransition(Duration.millis(500));
+        shufflePause.setOnFinished(actionEvent -> new Thread(shuffleTask).start());
+
+        shufflePause.play();
     }
 }
