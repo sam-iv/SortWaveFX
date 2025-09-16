@@ -7,6 +7,7 @@ import io.github.samiv.sortwavefx.model.SortingAlgorithm;
 import io.github.samiv.sortwavefx.task.SortAndVisualTask;
 import io.github.samiv.sortwavefx.util.ArrayUtil;
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -44,6 +45,8 @@ public class MainController {
     @FXML
     private Text sortText;
     @FXML
+    private Text statusText;
+    @FXML
     private Slider delaySlider;
     @FXML
     private TextField amountTextField;
@@ -66,7 +69,7 @@ public class MainController {
      * <ul>
      *     <li>{@link ComboBox} ({@link #sortComboBox}) Initialisation</li>
      *     <li>{@link Text} ({@link #sortText}) Initialisation</li>
-     *     <li>{@link Media} & {@link MediaPlayer} ({@link #swapMediaPlayer}, {@link #compareMediaPlayer})
+     *     <li>{@link Media} &amp {@link MediaPlayer} ({@link #swapMediaPlayer}, {@link #compareMediaPlayer})
      *     Initialisation</li>
      * </ul>
      */
@@ -78,6 +81,9 @@ public class MainController {
 
         // SortText setup
         sortText.setText(Algorithm.BUBBLE_SORT.getDisplayName());
+
+        // StatusText setup
+        statusText.setText("Status: " + Status.IDLE.getStatusName());
 
         // Sound setup
         String swapSoundPath = "/io/github/samiv/sortwavefx/sounds/swap.wav";
@@ -104,6 +110,19 @@ public class MainController {
     @FXML
     public void updateSortText() {
         sortText.setText(sortComboBox.getValue().getDisplayName());
+    }
+
+    /**
+     * An FXML method to update the status displayed in {@link #statusText} using predefined statuses created in
+     * {@link Status}.
+     *
+     * @param status The status to display.
+     *
+     * @see Status
+     */
+    @FXML
+    public void updateStatus(Status status) {
+        statusText.setText("Status: " + status.getStatusName());
     }
 
     /**
@@ -239,6 +258,7 @@ public class MainController {
      * @see #getAmountTextFieldValue()
      * @see #swapBars(ObservableList, int, int)
      * @see #compareBars(Region, Region)
+     * @see #updateStatus(Status)
      */
     @FXML
     private void startButtonClicked() {
@@ -298,13 +318,17 @@ public class MainController {
         shuffleTask.setOnSucceeded(workerStateEvent -> {
             PauseTransition sortPause = new PauseTransition(Duration.millis(700));
             sortPause.setOnFinished(actionEvent -> new Thread(sortTask).start());
+            Platform.runLater(() -> updateStatus(Status.SORTING)); // runLater to not update UI on background threads
             sortPause.play();
         });
+
+        sortTask.setOnSucceeded(workerStateEvent -> Platform.runLater(() -> updateStatus(Status.IDLE)));
 
         // Start the visualisation by first running the shuffle task on a new thread.
         PauseTransition shufflePause = new PauseTransition(Duration.millis(500));
         shufflePause.setOnFinished(actionEvent -> new Thread(shuffleTask).start());
 
+        updateStatus(Status.SHUFFLING);
         shufflePause.play();
     }
 }
