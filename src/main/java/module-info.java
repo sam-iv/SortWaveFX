@@ -1,4 +1,4 @@
-module com.sortwavefx {
+module io.github.samiv.sortwavefx {
     requires javafx.controls;
     requires javafx.fxml;
 
@@ -7,7 +7,11 @@ module com.sortwavefx {
     requires net.synedra.validatorfx;
     requires org.kordamp.ikonli.javafx;
     requires com.almasb.fxgl.all;
+    requires javafx.media;
 
-    opens com.sortwavefx to javafx.fxml;
-    exports com.sortwavefx;
+    // Allow modules access to their relevant packages
+    opens io.github.samiv.sortwavefx.ui to javafx.fxml;
+    opens io.github.samiv.sortwavefx.sounds to javafx.media;
+
+    exports io.github.samiv.sortwavefx;
 }

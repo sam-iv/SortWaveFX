@@ -1,0 +1,29 @@
+.background-pane {
+    -fx-background-color: #2F2F2F;
+}
+
+.vbox {
+    -fx-background-color: #222222;
+}
+
+.controls {
+    -fx-background-color: #8D8D8D;
+}
+
+.gradient-background {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #66ccff, #0099ff);
+}
+
+.vbox .text {
+    -fx-fill: #ebebeb;
+}
+
+.split-pane > .split-pane-divider {
+    -fx-background-color: #2F2F2F;
+    -fx-border-color: transparent;
+    -fx-padding: 0 1 0 1;
+}
+
+.split-pane {
+    -fx-background-color: transparent, -fx-background;
+}

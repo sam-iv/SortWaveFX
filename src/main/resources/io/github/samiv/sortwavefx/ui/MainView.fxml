@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="768.0" prefWidth="1515.0" styleClass="background-pane" stylesheets="@MainCSS.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.samiv.sortwavefx.ui.MainController">
+    <children>
+      <SplitPane dividerPositions="0.13488975356679636" prefHeight="768.0" prefWidth="1544.0" stylesheets="@MainCSS.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <AnchorPane maxWidth="-Infinity" minHeight="0.0" minWidth="-Infinity" prefHeight="768.0" prefWidth="208.0" styleClass="gradient-background" stylesheets="@MainCSS.css">
+               <children>
+                    <VBox alignment="TOP_CENTER" prefHeight="760.0" prefWidth="202.0" styleClass="vbox" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="3.0" AnchorPane.topAnchor="3.0">
+                        <children>
+                            <Text fx:id="sortText" fill="#9c565600" smooth="false" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" text="This is some type of sort" textAlignment="CENTER" wrappingWidth="182.6865234375">
+                                <font>
+                                    <Font name="System Bold" size="24.0" />
+                                </font>
+                                <VBox.margin>
+                                    <Insets bottom="15.0" />
+                                </VBox.margin>
+                            </Text>
+                            <Text fx:id="statusText" fill="#ebebeb" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" text="Status: Idle" textAlignment="CENTER" wrappingWidth="184.646484375">
+                                <font>
+                                    <Font size="18.0" />
+                                </font>
+                                <VBox.margin>
+                                    <Insets bottom="5.0" />
+                                </VBox.margin>
+                            </Text>
+                            <Text fx:id="accessText" fill="#ebebeb" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" text="Accesses: 0" textAlignment="CENTER" wrappingWidth="183.13671875">
+                                <font>
+                                    <Font size="18.0" />
+                                </font>
+                                <VBox.margin>
+                                    <Insets bottom="5.0" />
+                                </VBox.margin>
+                            </Text>
+                            <Text fx:id="comparisonText" fill="#ebebeb" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" text="Comparisons: 0" textAlignment="CENTER" wrappingWidth="185.13671875">
+                                <font>
+                                    <Font size="18.0" />
+                                </font>
+                                <VBox.margin>
+                                    <Insets bottom="5.0" />
+                                </VBox.margin>
+                            </Text>
+                            <Text fx:id="swapText" fill="#ebebeb" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" text="Swaps: 0" textAlignment="CENTER" wrappingWidth="184.484375">
+                                <font>
+                                    <Font size="18.0" />
+                                </font>
+                                <VBox.margin>
+                                    <Insets bottom="50.0" />
+                                </VBox.margin>
+                            </Text>
+                            <Text fill="#ebebeb" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" text="Amount of Bars:" textAlignment="CENTER">
+                                <font>
+                                    <Font size="18.0" />
+                                </font>
+                                <VBox.margin>
+                                    <Insets bottom="5.0" />
+                                </VBox.margin>
+                            </Text>
+                            <TextField fx:id="amountTextField" promptText="5 - 100" styleClass="controls">
+                                <VBox.margin>
+                                    <Insets bottom="125.0" left="10.0" right="10.0" />
+                                </VBox.margin>
+                            </TextField>
+                            <Text fill="#ebebeb" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text" text="Delay (ms):">
+                                <font>
+                                    <Font size="18.0" />
+                                </font>
+                                <VBox.margin>
+                                    <Insets bottom="5.0" />
+                                </VBox.margin>
+                            </Text>
+                            <Slider fx:id="delaySlider" blockIncrement="50.0" majorTickUnit="95.0" max="1000.0" min="50.0" minorTickCount="1" prefHeight="38.0" prefWidth="223.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0">
+                                <VBox.margin>
+                                    <Insets bottom="150.0" />
+                                </VBox.margin>
+                           <padding>
+                              <Insets left="10.0" right="10.0" />
+                           </padding>
+                            </Slider>
+                            <ComboBox fx:id="sortComboBox" onAction="#updateSortText" prefHeight="25.0" prefWidth="211.0" styleClass="controls">
+                                <VBox.margin>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" />
+                                </VBox.margin>
+                            </ComboBox>
+                            <Button fx:id="dynamicButton" mnemonicParsing="false" onAction="#onDynamicButtonClick" styleClass="controls" text="Visualise" textFill="#ebebeb" />
+                        </children>
+                    </VBox>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" styleClass="background-pane" stylesheets="@MainCSS.css">
+               <children>
+                    <HBox fx:id="barContainer" alignment="BOTTOM_LEFT" fillHeight="false" prefHeight="768.0" prefWidth="1307.0" spacing="5.0" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+    </children>
+
+</AnchorPane>
