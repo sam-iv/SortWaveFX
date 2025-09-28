@@ -19,10 +19,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -44,6 +42,12 @@ public class MainController {
     private Text sortText;
     @FXML
     private Text statusText;
+    @FXML
+    private Text accessText;
+    @FXML
+    private Text comparisonText;
+    @FXML
+    private Text swapText;
     @FXML
     private Slider delaySlider;
     @FXML
@@ -165,6 +169,22 @@ public class MainController {
             delaySlider.setDisable(true);
             amountTextField.setDisable(true);
             sortComboBox.setDisable(true);
+        });
+    }
+
+    private void updateCounters(int accesses, int comparisons, int swaps) {
+        Platform.runLater(() -> {
+            accessText.setText("Accesses: " + accesses);
+            comparisonText.setText("Comparisons: " + comparisons);
+            swapText.setText("Swaps: " + swaps);
+        });
+    }
+
+    private void resetCounters() {
+        Platform.runLater(() -> {
+            accessText.setText("Accesses: " + 0);
+            comparisonText.setText("Comparisons: " + 0);
+            swapText.setText("Swaps: " + 0);
         });
     }
 
@@ -351,6 +371,8 @@ public class MainController {
                     compareMediaPlayer.play();
                     break;
             }
+
+            updateCounters(newAction.accessCount(), newAction.comparisonCount(), newAction.swapCount());
         };
 
         // Attach animation listener to both tasks.
@@ -361,16 +383,17 @@ public class MainController {
         shuffleTask.setOnSucceeded(workerStateEvent -> {
             PauseTransition sortPause = new PauseTransition(Duration.millis(700));
 
-            sortPause.setOnFinished(actionEvent -> new Thread(sortTask).start());
+            sortPause.setOnFinished(actionEvent -> {
+                resetCounters();
+                new Thread(sortTask).start();
+            });
 
             Platform.runLater(() -> updateStatus(Status.SORTING)); // runLater to not update UI on background threads
             activeTask = sortTask;
             sortPause.play();
         });
 
-        sortTask.setOnSucceeded(workerStateEvent -> {
-            resetUI(false);
-        });
+        sortTask.setOnSucceeded(workerStateEvent -> resetUI(false));
 
         shuffleTask.setOnCancelled(workerStateEvent -> resetUI(true));
 
@@ -384,6 +407,7 @@ public class MainController {
         activeTask = shuffleTask;
         dynamicButton.setText("Stop");
         lockUI();
+        resetCounters();
         shufflePause.play();
     }
 

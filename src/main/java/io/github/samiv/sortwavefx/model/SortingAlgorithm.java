@@ -10,6 +10,12 @@ package io.github.samiv.sortwavefx.model;
  *     <li>{@link #step()} To conduct a single step of the algorithm, returning a {@link SortAction}</li>
  *     <li>{@link #isDone()} To signal if the algorithm has finished sorting</li>
  *     <li>{@link #getArray()} A getter to get the current state of the array</li>
+ *     <li>{@link #getAccessCount()} A getter to get the cumulative number of array accesses
+ *     performed up to this step.</li>
+ *     <li>{@link #getComparisonCount()} A getter to get the cumulative number of comparisons
+ *     performed up to this step.</li>
+ *     <li>{@link #getSwapCount()} A getter to get the cumulative number of swaps
+ *     performed up to this step.</li>
  *     <li>{@link #getName()} A getter to get the name of the sorting algorithm</li>
  * </ul>
  */
@@ -22,6 +28,12 @@ public interface SortingAlgorithm {
     boolean isDone();
 
     int[] getArray();
+
+    int getAccessCount();
+
+    int getComparisonCount();
+
+    int getSwapCount();
 
     String getName();
 }

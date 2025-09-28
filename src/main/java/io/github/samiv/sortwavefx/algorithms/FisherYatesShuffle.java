@@ -19,6 +19,9 @@ public class FisherYatesShuffle implements SortingAlgorithm {
     private int j;
     private boolean isDone;
     private Random rng;
+    private int accessCounter;
+    private int comparisonCounter;
+    private int swapCounter;
 
     @Override
     public void setup(int[] arrayToBeSorted) {
@@ -30,6 +33,9 @@ public class FisherYatesShuffle implements SortingAlgorithm {
             this.i = arrayToBeSorted.length - 1;
             this.isDone = false;
             rng = new Random();
+            this.accessCounter = 0;
+            this.comparisonCounter = 0;
+            this.swapCounter = 0;
         }
     }
 
@@ -46,7 +52,10 @@ public class FisherYatesShuffle implements SortingAlgorithm {
         int temp = array[j];
         array[j] = array[i];
         array[i] = temp;
-        sortAction = new SortAction(ActionType.SWAP, i, j);
+        accessCounter += 4;
+        swapCounter++;
+
+        sortAction = new SortAction(ActionType.SWAP, accessCounter, comparisonCounter, swapCounter, i, j);
 
         i--;
         if (i <= 0) { isDone = true; }
@@ -59,6 +68,21 @@ public class FisherYatesShuffle implements SortingAlgorithm {
 
     @Override
     public int[] getArray() { return this.array; }
+
+    @Override
+    public int getAccessCount() {
+        return this.accessCounter;
+    }
+
+    @Override
+    public int getComparisonCount() {
+        return this.comparisonCounter;
+    }
+
+    @Override
+    public int getSwapCount() {
+        return this.swapCounter;
+    }
 
     @Override
     public String getName() { return "Fisher-Yates Shuffle"; }
