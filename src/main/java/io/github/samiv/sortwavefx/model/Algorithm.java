@@ -31,6 +31,9 @@ public enum Algorithm {
 
     public AlgorithmType getAlgorithmType() { return this.algorithmType; }
 
+    @Override
+    public String toString() { return displayName; }
+
     /**
      * Factory method to create instances of {@link SortingAlgorithm}.
      * @return A new object that is an implementation of {@link SortingAlgorithm}/

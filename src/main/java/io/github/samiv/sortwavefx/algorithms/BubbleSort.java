@@ -18,6 +18,9 @@ public class BubbleSort implements SortingAlgorithm {
     private int i;
     private int j;
     private boolean isDone;
+    private int accessCounter;
+    private int comparisonCounter;
+    private int swapCounter;
 
     @Override
     public void setup(int[] arrayToBeSorted) {
@@ -30,6 +33,9 @@ public class BubbleSort implements SortingAlgorithm {
             this.i = 0;
             this.j = 0;
             this.isDone = false;
+            this.accessCounter = 0;
+            this.comparisonCounter = 0;
+            this.swapCounter = 0;
         }
     }
 
@@ -40,13 +46,19 @@ public class BubbleSort implements SortingAlgorithm {
         SortAction sortAction;
 
         // Comparison
+        comparisonCounter++;
+        accessCounter += 2;
         if (array[j] > array[j + 1]) {
             int temp = array[j];
             array[j] = array[j + 1];
             array[j + 1] = temp;
-            sortAction = new SortAction(ActionType.SWAP, j, j + 1);
+            swapCounter++;
+            accessCounter += 4;
+            sortAction = new SortAction(ActionType.SWAP, accessCounter, comparisonCounter, swapCounter,
+                    j, j + 1);
         } else {
-            sortAction = new SortAction(ActionType.COMPARE, j, j + 1);
+            sortAction = new SortAction(ActionType.COMPARE, accessCounter, comparisonCounter, swapCounter,
+                    j, j + 1);
         }
 
         // Incrementing Loop
@@ -72,6 +84,21 @@ public class BubbleSort implements SortingAlgorithm {
     @Override
     public int[] getArray() {
         return this.array;
+    }
+
+    @Override
+    public int getAccessCount() {
+        return accessCounter;
+    }
+
+    @Override
+    public int getComparisonCount() {
+        return comparisonCounter;
+    }
+
+    @Override
+    public int getSwapCount() {
+        return swapCounter;
     }
 
     @Override

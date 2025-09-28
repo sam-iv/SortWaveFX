@@ -96,6 +96,12 @@ public class FisherYatesShuffleJTest {
                 swapCounter++;
             }
 
+            int expectedAccessCount = stepCounter * 4; // Each swap is 4 accesses
+            assertEquals(expectedAccessCount, step.accessCount(), "Cumulative access count should be " +
+                    "4x the step number");
+            assertEquals(stepCounter, step.swapCount(), "Cumulative swap count should match the step number");
+            assertEquals(0, step.comparisonCount(), "Fisher-Yates should have 0 comparisons");
+
             if (stepCounter > arraySize) {
                 fail("Shuffle conducted too many steps without finishing");
             }

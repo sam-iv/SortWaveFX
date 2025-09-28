@@ -22,15 +22,16 @@ public class SortAndVisualTask extends Task<SortAction> {
 
     /**
      * A method that overrides {@link javafx.concurrent.Task}'s call method to loop
-     * whilst the {@link SortingAlgorithm} hasn't completed, and send a {@link SortAction}'s to the
-     * UI.
+     * whilst the {@link SortingAlgorithm} hasn't completed or the visualisation hasn't been cancelled,
+     * and send a {@link SortAction}'s to the UI.
+     *
      * @return SortAction The sort action that describes what has happened in the algorithm.
      * @throws Exception If there is an issue whilst running the algorithm.
      */
     @Override
     @SuppressWarnings("BusyWait")
     protected SortAction call() throws Exception {
-        while (!sortingAlgorithm.isDone()) {
+        while (!sortingAlgorithm.isDone() && !isCancelled()) {
             SortAction sortAction = sortingAlgorithm.step();
             updateValue(sortAction);
             Thread.sleep(delayMs);
