@@ -87,7 +87,7 @@
                                     <Insets bottom="10.0" left="10.0" right="10.0" />
                                 </VBox.margin>
                             </ComboBox>
-                            <Button fx:id="startButton" mnemonicParsing="false" onAction="#startButtonClicked" styleClass="controls" text="Visualise" textFill="#ebebeb" />
+                            <Button fx:id="dynamicButton" mnemonicParsing="false" onAction="#onDynamicButtonClick" styleClass="controls" text="Visualise" textFill="#ebebeb" />
                         </children>
                     </VBox>
                </children>

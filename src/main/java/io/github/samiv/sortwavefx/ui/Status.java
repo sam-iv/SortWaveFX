@@ -7,7 +7,8 @@ package io.github.samiv.sortwavefx.ui;
 public enum Status {
     IDLE("Idle"),
     SHUFFLING("Shuffling"),
-    SORTING("Sorting");
+    SORTING("Sorting"),
+    STOPPED("Stopped");
 
     private final String statusName;
 

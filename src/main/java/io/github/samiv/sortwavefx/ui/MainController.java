@@ -12,16 +12,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.Arrays;
@@ -50,9 +48,13 @@ public class MainController {
     private Slider delaySlider;
     @FXML
     private TextField amountTextField;
+    @FXML
+    private Button dynamicButton;
 
     /** An array that is the true state for the visualisation/sort, modified in-place by {@link SortingAlgorithm}'s */
     private int[] currentArray;
+
+    private SortAndVisualTask activeTask = null;
 
     private MediaPlayer swapMediaPlayer;
     private MediaPlayer compareMediaPlayer;
@@ -113,16 +115,57 @@ public class MainController {
     }
 
     /**
-     * An FXML method to update the status displayed in {@link #statusText} using predefined statuses created in
+     * A method to update the status displayed in {@link #statusText} using predefined statuses created in
      * {@link Status}.
      *
      * @param status The status to display.
      *
      * @see Status
      */
-    @FXML
-    public void updateStatus(Status status) {
+    private void updateStatus(Status status) {
         statusText.setText("Status: " + status.getStatusName());
+    }
+
+    /**
+     * A method to reset UI elements. To do this the method re-enables previously locked elements, sets the
+     * {@link #activeTask} to null, and updates the status.
+     * @param cancelled If True, set status to {@link Status#STOPPED}, else, {@link Status#IDLE}.
+     */
+    private void resetUI(boolean cancelled) {
+        Platform.runLater(() -> {
+            dynamicButton.setText("Visualise");
+            delaySlider.setDisable(false);
+            amountTextField.setDisable(false);
+            sortComboBox.setDisable(false);
+        });
+        activeTask = null;
+
+        if (cancelled) {
+            updateStatus(Status.STOPPED);
+        } else {
+            updateStatus(Status.IDLE);
+        }
+    }
+
+    /**
+     * A method to lock UI elements, to prevent the user from changing values, (although changing said values wouldn't
+     * change the visualisation).
+     * <p>
+     * Elements locked:
+     * <ul>
+     *     <li>{@link #dynamicButton}</li>
+     *     <li>{@link #delaySlider}</li>
+     *     <li>{@link #amountTextField}</li>
+     *     <li>{@link #sortComboBox}</li>
+     * </ul>
+     */
+    private void lockUI() {
+        Platform.runLater(() -> {
+            dynamicButton.setText("Stop");
+            delaySlider.setDisable(true);
+            amountTextField.setDisable(true);
+            sortComboBox.setDisable(true);
+        });
     }
 
     /**
@@ -241,8 +284,6 @@ public class MainController {
     }
 
     /**
-     * A method to handle the on-click event for the {@code startButton} in the view ({@code MainView.fxml}).
-     * <p>
      * The method orchestrates the entire visualisation sequence:
      * <ul>
      *     <li>It generates a new set of bars by invoking {@link #generateAndDisplayBars(int)} passing
@@ -251,6 +292,7 @@ public class MainController {
      *      {@link #compareBars(Region, Region)} to animate both the visualisation of the shuffle and
      *      sorting, where the shuffle task is chained to the animate task; hence, after the shuffle is complete, the
      *      sort begins.</li>
+     *      <li>It controls UI elements through helper methods.</li>
      * </ul>
      *
      * @see SortAndVisualTask
@@ -259,9 +301,10 @@ public class MainController {
      * @see #swapBars(ObservableList, int, int)
      * @see #compareBars(Region, Region)
      * @see #updateStatus(Status)
+     * @see #lockUI()
+     * @see #resetUI(boolean)
      */
-    @FXML
-    private void startButtonClicked() {
+    private void startSort() {
         Optional<Integer> size = getAmountTextFieldValue();
         if (size.isEmpty()) {
             return;
@@ -317,18 +360,46 @@ public class MainController {
         // Chain the tasks (When shuffle task succeeds, start the sort task).
         shuffleTask.setOnSucceeded(workerStateEvent -> {
             PauseTransition sortPause = new PauseTransition(Duration.millis(700));
+
             sortPause.setOnFinished(actionEvent -> new Thread(sortTask).start());
+
             Platform.runLater(() -> updateStatus(Status.SORTING)); // runLater to not update UI on background threads
+            activeTask = sortTask;
             sortPause.play();
         });
 
-        sortTask.setOnSucceeded(workerStateEvent -> Platform.runLater(() -> updateStatus(Status.IDLE)));
+        sortTask.setOnSucceeded(workerStateEvent -> {
+            resetUI(false);
+        });
+
+        shuffleTask.setOnCancelled(workerStateEvent -> resetUI(true));
+
+        sortTask.setOnCancelled(workerStateEvent -> resetUI(true));
 
         // Start the visualisation by first running the shuffle task on a new thread.
         PauseTransition shufflePause = new PauseTransition(Duration.millis(500));
         shufflePause.setOnFinished(actionEvent -> new Thread(shuffleTask).start());
 
         updateStatus(Status.SHUFFLING);
+        activeTask = shuffleTask;
+        dynamicButton.setText("Stop");
+        lockUI();
         shufflePause.play();
+    }
+
+    /**
+     * An FXML method to handle the on-click event for the {@link #dynamicButton} in the view ({@code MainView.fxml}).
+     * <p>
+     * The method decides whether to stop the {@link #activeTask}, if there is one running, or to start the sort.
+     *
+     * @see #startSort()
+     */
+    @FXML
+    private void onDynamicButtonClick() {
+        if (activeTask != null) {
+            activeTask.cancel();
+        } else {
+            startSort();
+        }
     }
 }
