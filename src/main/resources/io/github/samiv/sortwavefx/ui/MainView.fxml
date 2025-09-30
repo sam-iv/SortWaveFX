@@ -61,7 +61,7 @@
                                     <Insets bottom="5.0" />
                                 </VBox.margin>
                             </Text>
-                            <TextField fx:id="amountTextField" promptText="5 - 100" styleClass="controls">
+                            <TextField fx:id="amountTextField" promptText="3 - 100" styleClass="controls">
                                 <VBox.margin>
                                     <Insets bottom="125.0" left="10.0" right="10.0" />
                                 </VBox.margin>
