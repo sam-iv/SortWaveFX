@@ -41,7 +41,9 @@ public class BubbleSort implements SortingAlgorithm {
 
     @Override
     public SortAction step() {
-        if (isDone) { return null; }
+        if (isDone) {
+            return null;
+        }
 
         SortAction sortAction;
 
@@ -87,19 +89,13 @@ public class BubbleSort implements SortingAlgorithm {
     }
 
     @Override
-    public int getAccessCount() {
-        return accessCounter;
-    }
+    public int getAccessCount() { return accessCounter; }
 
     @Override
-    public int getComparisonCount() {
-        return comparisonCounter;
-    }
+    public int getComparisonCount() { return comparisonCounter; }
 
     @Override
-    public int getSwapCount() {
-        return swapCounter;
-    }
+    public int getSwapCount() { return swapCounter; }
 
     @Override
     public String getName() {

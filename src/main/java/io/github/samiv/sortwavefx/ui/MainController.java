@@ -206,7 +206,7 @@ public class MainController {
      * A method to get and validate the entry from the {@link #amountTextField}. It uses
      * {@link #showError(String, String)} to display alert to the user if the entry fails validation.
      *
-     * @return An optional container of Integer of the string if it can be converted to an int between 5 - 100,
+     * @return An optional container of Integer of the string if it can be converted to an int between 3 - 100,
      * otherwise empty.
      * 
      * @see #showError(String, String) 
@@ -214,14 +214,14 @@ public class MainController {
     private Optional<Integer> getAmountTextFieldValue() {
         try {
             int output = Integer.parseInt(amountTextField.getText());
-            if (output >= 5 && output <= 100) {
+            if (output >= 3 && output <= 100) {
                 return Optional.of(output);
             } else {
-                showError("Input Error", "Please enter a valid number (5 - 100)");
+                showError("Input Error", "Please enter a valid number (3 - 100)");
                 return Optional.empty();
             }
         } catch (NumberFormatException e) {
-            showError("Input Error", "Please enter a valid number (5 - 100)");
+            showError("Input Error", "Please enter a valid number (3 - 100)");
             return Optional.empty();
         }
     }
